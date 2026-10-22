@@ -16,10 +16,10 @@
 <body>
 <div class="overlay"></div>
 
-<!-- Üst Menü (Artık Hoş Geldin İrem Yazmıyor!) -->
+<!-- Üst Menü -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-        <a class="navbar-brand" href="#"><i class="fas fa-hotel text-warning"></i> Grand Otel Rezervasyon</a>
+        <a class="navbar-brand" href="ana-sayfa.html"><i class="fas fa-hotel text-warning"></i> Grand Otel Rezervasyon</a>
         <div class="d-flex text-white align-items-center">
             <span class="me-3"><i class="fas fa-phone-alt"></i> 0212 555 44 33</span>
             <a href="login.html" class="btn btn-outline-light btn-sm"><i class="fas fa-user-tie"></i> Personel Girişi</a>
@@ -36,7 +36,7 @@
                 
                 <form id="publicRezervasyonForm">
                     <!-- 1. MİSAFİR BİLGİLERİ -->
-                    <h5 class="section-title"><i class="fas fa-user"></i> 1. Misafir Bilgileri</h5>
+                    <h5 class="section-title"><i class="fas fa-user"></i> Misafir Bilgileri</h5>
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label class="form-label">Adınız</label>
@@ -106,7 +106,7 @@
                     <p class="mb-0">Otelimizde sizi ağırlamaktan mutluluk duyacağız.</p>
                 </div>
                 <div id="pHata" class="alert alert-danger mt-4 d-none text-center">
-                    İşlem başarısız! TC No veya E-posta sistemde zaten kayıtlı olabilir. Lütfen kontrol edin.
+                    İşlem başarısız! Lütfen bilgilerinizi kontrol edin.
                 </div>
             </div>
         </div>
@@ -122,7 +122,6 @@
                 let secim = document.getElementById('pOda');
                 secim.innerHTML = '<option value="">Oda Seçiniz...</option>';
                 data.filter(o => o.durum.toLowerCase() === 'boş').forEach(o => {
-                    // odaTipi var mı yok mu kontrolü ile güvenli hale getirdik
                     let tip = o.odaTipi ? o.odaTipi.tipAdi : 'Standart Oda';
                     secim.innerHTML += `<option value="${o.id}">Oda ${o.odaNumarasi} - ${tip}</option>`;
                 });
@@ -133,7 +132,6 @@
     document.getElementById('publicRezervasyonForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // 1. Yeni Müşteri Objesi
         const yeniMisafir = {
             ad: document.getElementById('pAd').value,
             soyad: document.getElementById('pSoyad').value,
@@ -143,20 +141,31 @@
             dogumTarihi: document.getElementById('pDogum').value
         };
 
-        // Önce müşteriyi veritabanına "Misafir" olarak kaydediyoruz
+        // Önce misafiri kaydediyoruz (Backend'de aynı TC varsa hata almamak için önce misafir listesini kontrol edebiliriz ama direkt POST atıyoruz)
         fetch('http://localhost:8080/api/misafirler', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(yeniMisafir)
         })
         .then(res => {
-            if(!res.ok) throw new Error("Misafir kaydı başarısız (TC/Mail kullanılmış olabilir)");
-            return res.json(); // Java'nın geri döndürdüğü ID'li misafir objesini alıyoruz
+            if(!res.ok) {
+                // Eğer misafir zaten kayıtlıysa, tüm misafirleri çekip bu TC'ye ait olanın ID'sini bulalım!
+                return fetch('http://localhost:8080/api/misafirler')
+                    .then(r => r.json())
+                    .then(misafirlerListesi => {
+                        const bulunan = misafirlerListesi.find(m => m.tcPasaportNo === yeniMisafir.tcPasaportNo);
+                        if(bulunan) {
+                            return bulunan; // Var olan misafirin ID'sini döndür
+                        }
+                        throw new Error("Misafir kaydedilemedi.");
+                    });
+            }
+            return res.json();
         })
         .then(kaydedilenMisafir => {
-            // 2. Müşteri başarıyla kaydedildi! Şimdi onun ID'sini kullanarak Rezervasyonu yapıyoruz
+            // Rezervasyonu oluşturuyoruz
             const yeniRez = {
-                misafir: { id: kaydedilenMisafir.id }, // İşte can alıcı nokta burası!
+                misafir: { id: kaydedilenMisafir.id },
                 oda: { id: document.getElementById('pOda').value },
                 girisTarihi: document.getElementById('pGiris').value,
                 cikisTarihi: document.getElementById('pCikis').value,
@@ -174,8 +183,6 @@
                 document.getElementById('pMesaj').classList.remove('d-none');
                 document.getElementById('pHata').classList.add('d-none');
                 document.getElementById('publicRezervasyonForm').reset();
-                
-                // 3 saniye sonra sayfayı tertemiz hale getir
                 setTimeout(() => window.location.reload(), 3000);
             } else {
                 throw new Error("Rezervasyon ekleme başarısız");

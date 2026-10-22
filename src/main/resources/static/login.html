@@ -2,76 +2,109 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Otel Sistemi - Giriş Yap</title>
-    <!-- Bootstrap CSS -->
+    <title>KOÇAK Otel - Yönetici Girişi</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #2c3e50;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
+        /* Ana sayfayla birebir aynı lüks arka plan ve tema */
+        body { 
+            background: url('https://images.unsplash.com/photo-1566073172553-d18388410543?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed; 
+            background-size: cover; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
         }
-        .login-card {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 400px;
+        .overlay { 
+            background-color: rgba(0, 0, 0, 0.6); 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            z-index: -1; 
+        }
+        .navbar { 
+            background-color: rgba(33, 37, 41, 0.9) !important; 
+        }
+        .login-card { 
+            background: rgba(255, 255, 255, 0.95); 
+            border-radius: 15px; 
+            padding: 40px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4); 
+            margin-top: 80px; 
+        }
+        .section-title { 
+            color: #0d6efd; 
+            border-bottom: 2px solid #0d6efd; 
+            padding-bottom: 10px; 
+            margin-bottom: 25px; 
+            font-weight: bold; 
+            font-size: 1.3rem; 
         }
     </style>
 </head>
 <body>
+<div class="overlay"></div>
 
-    <div class="login-card">
-        <h3 class="text-center text-primary mb-4">Otel Yönetim Sistemi</h3>
-        <form id="loginForm">
-            <div class="mb-3">
-                <label for="kullaniciAdi" class="form-label">Kullanıcı Adı</label>
-                <input type="text" class="form-control" id="kullaniciAdi" required>
-            </div>
-            <div class="mb-3">
-                <label for="sifre" class="form-label">Şifre</label>
-                <input type="password" class="form-control" id="sifre" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100 mt-3">Giriş Yap</button>
-        </form>
-        <div id="hataMesaji" class="alert alert-danger mt-3 d-none">
-            Kullanıcı adı veya şifre hatalı!
+<!-- Üst Menü -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="ana-sayfa.html"><i class="fas fa-hotel text-warning"></i> KOÇAK Otel Rezervasyon</a>
+        <div class="d-flex text-white align-items-center">
+            <a href="ana-sayfa.html" class="btn btn-outline-light btn-sm"><i class="fas fa-home"></i> Ana Sayfaya Dön</a>
         </div>
     </div>
+</nav>
 
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // Sayfanın yenilenmesini engelle
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="login-card">
+                <div class="text-center mb-4">
+                    <i class="fas fa-user-shield fa-3x text-primary mb-3"></i>
+                    <h3 class="fw-bold">Yönetici Girişi</h3>
+                    <p class="text-muted small">Hoş geldiniz, Sude Hanım. Lütfen bilgilerinizi giriniz.</p>
+                </div>
 
-            const kAdi = document.getElementById('kullaniciAdi').value;
-            const sifre = document.getElementById('sifre').value;
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold"><i class="fas fa-user"></i> Kullanıcı Adı</label>
+                        <input type="text" id="kullaniciAdi" class="form-control form-control-lg" placeholder="Kullanıcı adınızı girin" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold"><i class="fas fa-lock"></i> Şifre</label>
+                        <input type="password" id="sifre" class="form-control form-control-lg" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm">
+                        <i class="fas fa-sign-in-alt"></i> Giriş Yap
+                    </button>
+                </form>
 
-            // Yazdığımız Java Controller'ına POST isteği atıyoruz
-            fetch(`http://localhost:8080/api/personel/login?kullaniciAdi=${kAdi}&sifre=${sifre}`, {
-                method: 'POST'
-            })
-            .then(response => response.text())
-            .then(text => {
-                if (text) {
-                    // Java'dan dolu bir cevap geldiyse (Giriş başarılı)
-                    const personel = JSON.parse(text);
-                    alert("Giriş Başarılı! Hoş geldin, " + personel.ad + " (" + personel.gorev + ")");
-                    
-                    // Başarılı girişte ana yönetim paneline yönlendir
-                    window.location.href = "index.html"; 
-                } else {
-                    // Java'dan boş cevap geldiyse (Hatalı giriş)
-                    document.getElementById('hataMesaji').classList.remove('d-none');
-                }
-            })
-            .catch(error => console.error('Hata:', error));
-        });
-    </script>
+                <!-- Hata Mesajı -->
+                <div id="loginHata" class="alert alert-danger mt-3 d-none text-center small">
+                    Kullanıcı adı veya şifre hatalı! (Kullanıcı: sude)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const kAdi = document.getElementById('kullaniciAdi').value.trim();
+        const sifre = document.getElementById('sifre').value.trim();
+
+        // Yönetici doğrulaması (Kullanıcı adı: sude, Şifre: 12345)
+        if (kAdi.toLowerCase() === 'sude' && sifre === '12345') {
+            document.getElementById('loginHata').classList.add('d-none');
+            
+            // Oturum durumunu kaydedip doğrudan admin/rezervasyon paneline yönlendiriyoruz
+            localStorage.setItem('aktifYonetici', 'Sude');
+            window.location.href = 'rezervasyon-listesi.html'; 
+        } else {
+            document.getElementById('loginHata').classList.remove('d-none');
+        }
+    });
+</script>
 </body>
 </html>
