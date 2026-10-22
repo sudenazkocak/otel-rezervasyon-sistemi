@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gelir Raporu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { overflow-x: hidden; background-color: #f4f6f9; }
+        .sidebar { height: 100vh; background-color: #343a40; color: white; padding-top: 20px; }
+        .sidebar a { color: #c2c7d0; text-decoration: none; padding: 15px 20px; display: block; font-size: 1.1rem; transition: 0.3s; }
+        .sidebar a:hover, .sidebar a.active { background-color: #495057; color: white; border-left: 4px solid #0d6efd; }
+        .sidebar i { margin-right: 10px; width: 25px; }
+        .main-content { padding: 30px; }
+        .card { border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 10px; }
+        .revenue-box { background: linear-gradient(45deg, #198754, #20c997); color: white; padding: 20px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sol Menü -->
+        <div class="col-md-2 sidebar position-fixed">
+            <h4 class="text-center text-white mb-4 border-bottom pb-3"><i class="fas fa-hotel"></i> Grand Otel</h4>
+            <a href="index.html"><i class="fas fa-tachometer-alt"></i> Ana Panel</a>
+            <a href="rezervasyon-listesi.html"><i class="fas fa-book"></i> Rezervasyonlar</a>
+            <a href="gelir-raporu.html" class="active"><i class="fas fa-chart-line"></i> Gelir Raporu</a>
+            <a href="rezervasyon-yap.html"><i class="fas fa-calendar-plus"></i> Yeni Rezervasyon</a>
+            <a href="misafir-ekle.html"><i class="fas fa-user-plus"></i> Misafir Ekle</a>
+            <a href="personel-listesi.html"><i class="fas fa-id-badge"></i> Personel Yönetimi</a>
+            <a href="#" onclick="cikisYap()"><i class="fas fa-sign-out-alt text-danger"></i> Güvenli Çıkış</a>
+        </div>
+
+        <!-- Sağ İçerik -->
+        <div class="col-md-10 offset-md-2 main-content">
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="revenue-box shadow">
+                        <h5>Toplam Otel Geliri</h5>
+                        <h2 id="toplamGelir">0.00 TL</h2>
+                        <small>Check-out yapılmış tüm konaklamalar</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-4">
+                <h4 class="mb-4 text-primary">Geçmiş Konaklama ve Ödeme Detayları</h4>
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>İşlem No</th>
+                            <th>Rezervasyon ID</th>
+                            <th>Ödeme Türü</th>
+                            <th>Ödeme Tarihi</th>
+                            <th>Tahsil Edilen Tutar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="odemeTablosu">
+                        <!-- Veriler JS ile gelecek -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", odemeleriGetir);
+
+    function odemeleriGetir() {
+        fetch('http://localhost:8080/api/odemeler')
+            .then(r => r.json())
+            .then(data => {
+                const tablo = document.getElementById('odemeTablosu');
+                let toplamPara = 0;
+                tablo.innerHTML = '';
+
+                if(data.length === 0) {
+                    tablo.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Henüz tamamlanmış bir ödeme bulunmuyor.</td></tr>';
+                    return;
+                }
+
+                data.forEach(odeme => {
+                    toplamPara += odeme.tutar;
+                    
+                    // Tarihi biraz daha okunaklı yapalım
+                    let tarihFormat = new Date(odeme.odemeTarihi).toLocaleString('tr-TR');
+
+                    tablo.innerHTML += `
+                        <tr>
+                            <td>#${odeme.id}</td>
+                            <td><span class="badge bg-secondary">Rezervasyon #${odeme.rezervasyonId}</span></td>
+                            <td><i class="fas fa-credit-card text-success"></i> ${odeme.odemeTuru}</td>
+                            <td>${tarihFormat}</td>
+                            <td class="text-success fw-bold">+${odeme.tutar} TL</td>
+                        </tr>
+                    `;
+                });
+
+                // Toplam geliri yukarıdaki yeşil karta yazdır
+                document.getElementById('toplamGelir').innerText = toplamPara.toLocaleString('tr-TR') + " TL";
+            });
+    }
+
+    function cikisYap() {
+        if(confirm("Sistemden çıkmak istediğinize emin misiniz?")) window.location.href = "login.html";
+    }
+</script>
+</body>
+</html>

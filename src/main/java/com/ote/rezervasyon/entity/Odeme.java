@@ -2,7 +2,6 @@ package com.ote.rezervasyon.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,16 +13,15 @@ public class Odeme {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "konaklama_id", nullable = false)
-    private Konaklama konaklama;
+    @Column(name = "rezervasyon_id", nullable = false)
+    private Long rezervasyonId;
 
     @Column(nullable = false)
-    private BigDecimal tutar;
+    private Double tutar;
 
-    @Column(nullable = false)
-    private String odemeTuru; // nakit, kart
+    @Column(name = "odeme_turu")
+    private String odemeTuru;
 
-    @Column(nullable = false)
-    private LocalDateTime tarih;
+    @Column(name = "odeme_tarihi", insertable = false, updatable = false)
+    private LocalDateTime odemeTarihi;
 }

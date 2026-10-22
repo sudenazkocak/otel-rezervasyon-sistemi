@@ -8,6 +8,7 @@ import java.time.LocalDate;
 @Table(name = "misafirler")
 @Data
 public class Misafir {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,6 +23,8 @@ public class Misafir {
     private String tcPasaportNo;
 
     private String telefon;
+    
     private String ePosta;
+    
     private LocalDate dogumTarihi;
 }

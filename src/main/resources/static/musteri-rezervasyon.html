@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Otel - Lüks Konaklama</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Zarif Fontlar: Playfair Display ve Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Montserrat', sans-serif; background-color: #fcfcfc; color: #333; }
+        h1, h2, h3, h4, h5, .navbar-brand { font-family: 'Playfair Display', serif; }
+        
+        /* Şeffaf Navbar */
+        .navbar { background-color: transparent; position: absolute; width: 100%; z-index: 10; padding: 20px 0; transition: 0.3s; }
+        .navbar.scrolled { background-color: rgba(255,255,255,0.95); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .navbar-brand { font-size: 2rem; color: white; font-weight: 600; letter-spacing: 2px; }
+        .nav-link { color: white !important; font-weight: 500; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
+        
+        /* Lüks Ana Görsel (Hero) */
+        .hero {
+            height: 80vh;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.2)), url('https://images.unsplash.com/photo-1542314831-c6a4d27ce6a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;
+            display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; color: white;
+        }
+        .hero h1 { font-size: 4rem; margin-bottom: 20px; }
+        .hero p { font-size: 1.2rem; font-weight: 300; letter-spacing: 2px; margin-bottom: 40px; }
+        
+        /* Tarih Seçim Barı */
+        .booking-bar { background: white; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-top: -60px; position: relative; z-index: 2; }
+        .btn-luxury { background-color: #2c3e50; color: white; border-radius: 0; text-transform: uppercase; letter-spacing: 1px; padding: 12px 30px; transition: 0.3s; }
+        .btn-luxury:hover { background-color: #1a252f; color: #e5b565; }
+        
+        /* Oda Kartları */
+        .section-title { text-align: center; margin: 80px 0 40px; }
+        .section-title h2 { font-size: 2.5rem; color: #2c3e50; }
+        .section-title p { color: #777; font-style: italic; }
+        .room-card { border: none; border-radius: 0; transition: 0.4s; background: transparent; }
+        .room-card:hover { transform: translateY(-10px); }
+        .room-card img { border-radius: 0; height: 350px; object-fit: cover; }
+        .room-card .card-body { padding: 30px 0; text-align: center; }
+        .room-card h5 { font-size: 1.8rem; color: #2c3e50; }
+        .room-card p { color: #666; font-size: 0.9rem; }
+        
+        footer { background-color: #2c3e50; color: white; padding: 60px 0 20px; margin-top: 80px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <!-- Menü -->
+    <nav class="navbar navbar-expand-lg" id="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="#">GRAND OTEL</a>
+            <div class="collapse navbar-collapse justify-content-end">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="#">Konaklama</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Spa & Wellness</a></li>
+                    <li class="nav-item"><a class="nav-link" href="login.html"><i class="fas fa-lock"></i> Personel</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Ana Karşılama Ekranı -->
+    <div class="hero">
+        <h1>Ege'nin İncisi</h1>
+        <p>Lüks, Konfor ve Eşsiz Bir Deneyim</p>
+    </div>
+
+    <!-- Müşteri Tarih Seçme Alanı -->
+    <div class="container">
+        <div class="booking-bar">
+            <div class="row align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label text-muted small text-uppercase">Giriş Tarihi</label>
+                    <input type="date" id="searchGiris" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-muted small text-uppercase">Çıkış Tarihi</label>
+                    <input type="date" id="searchCikis" class="form-control border-0 border-bottom rounded-0">
+                </div>
+                <div class="col-md-4 text-center">
+                    <button class="btn btn-luxury w-100" onclick="odalaribul()">Müsait Odaları Bul</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Müsait Odalar Listesi -->
+    <div class="container">
+        <div class="section-title">
+            <h2>Konaklama</h2>
+            <p>Ege Denizi manzarasına sahip zarif oda ve süitlerimizi keşfedin.</p>
+        </div>
+        <div class="row" id="musteriOdaListesi">
+            <!-- Odalar JavaScript ile otomatik yüklenecek -->
+        </div>
+    </div>
+
+    <!-- Rezervasyon Formu Pop-up (Modal) -->
+    <div class="modal fade" id="rezervasyonModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content rounded-0">
+                <div class="modal-header border-0 pb-0 mt-3">
+                    <h3 class="modal-title w-100 text-center" style="font-family: 'Playfair Display', serif;">Rezervasyonunuzu Tamamlayın</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-5">
+                    <form id="musteriRezervasyonForm">
+                        <input type="hidden" id="secilenOdaId">
+                        
+                        <h6 class="text-uppercase text-muted mb-4">Kişisel Bilgileriniz</h6>
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-4">
+                                <input type="text" id="mAd" class="form-control border-0 border-bottom rounded-0" placeholder="Adınız" required>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <input type="text" id="mSoyad" class="form-control border-0 border-bottom rounded-0" placeholder="Soyadınız" required>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <input type="text" id="mTc" class="form-control border-0 border-bottom rounded-0" placeholder="T.C. Kimlik / Pasaport" required>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <input type="text" id="mTel" class="form-control border-0 border-bottom rounded-0" placeholder="Telefon" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-luxury w-100 mt-2">Rezervasyonu Onayla</button>
+                    </form>
+                    <div id="basariMesaji" class="alert alert-success mt-3 d-none rounded-0 text-center">
+                        Rezervasyonunuz başarıyla alındı! Sizi ağırlamaktan mutluluk duyacağız.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alt Kısım -->
+    <footer>
+        <div class="container">
+            <h4 class="mb-3">GRAND OTEL</h4>
+            <p class="small text-muted mb-0">© 2026 Grand Otel. Tüm Hakları Saklıdır.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap & JS Bağlantıları -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            odalaribul(); 
+            
+            // Sayfa aşağı kaydırıldığında menü arka planını beyaz yap (Şık tasarım detayı)
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 50) {
+                    document.getElementById('navbar').classList.add('scrolled');
+                    document.querySelectorAll('.nav-link, .navbar-brand').forEach(el => el.style.color = '#333');
+                } else {
+                    document.getElementById('navbar').classList.remove('scrolled');
+                    document.querySelectorAll('.nav-link, .navbar-brand').forEach(el => el.style.color = 'white');
+                }
+            });
+        });
+
+        // Veritabanındaki sadece "boş" odaları müşteriye gösteren sistem
+        function odalaribul() {
+            fetch('http://localhost:8080/api/odalar')
+                .then(r => r.json())
+                .then(data => {
+                    const div = document.getElementById('musteriOdaListesi');
+                    div.innerHTML = '';
+                    
+                    data.forEach(oda => {
+                        if(oda.durum === 'boş') {
+                            // Gönderdiğin sitedeki gibi zarif oda fotoğrafları simülasyonu
+                            let resimUrl = oda.odaTipi.tipAdi.toLowerCase().includes('suit') 
+                                ? 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=800&q=80' 
+                                : 'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&q=80';
+
+                            div.innerHTML += `
+                                <div class="col-md-6 mb-5">
+                                    <div class="card room-card h-100">
+                                        <img src="${resimUrl}" class="card-img-top" alt="Oda Resmi">
+                                        <div class="card-body">
+                                            <h5>${oda.odaTipi.tipAdi} (Oda ${oda.odaNumarasi})</h5>
+                                            <p class="mt-3">Şıklığı ve konforu bir araya getiren bu oda, unutulmaz tatiller için ideal bir kaçış noktasıdır.</p>
+                                            <button class="btn btn-outline-dark rounded-0 mt-3 px-5 py-2" onclick="rezervasyonBaslat(${oda.id})">KEŞFET VE REZERVE ET</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    });
+                });
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('rezervasyonModal'));
+
+        // Tarih seçimi uyarısı ve Pop-up açma
+        function rezervasyonBaslat(odaId) {
+            let giris = document.getElementById('searchGiris').value;
+            let cikis = document.getElementById('searchCikis').value;
+
+            if(!giris || !cikis) {
+                alert("Lütfen rezervasyon için öncelikle Giriş ve Çıkış tarihlerini seçiniz!");
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            document.getElementById('secilenOdaId').value = odaId;
+            document.getElementById('basariMesaji').classList.add('d-none');
+            document.getElementById('musteriRezervasyonForm').style.display = 'block';
+            modal.show();
+        }
+
+        // Müşterinin kendi kendine kayıt olması
+        document.getElementById('musteriRezervasyonForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // 1. Önce misafiri sisteme kaydet
+            const misafirVerisi = {
+                tcKimlik: document.getElementById('mTc').value,
+                ad: document.getElementById('mAd').value,
+                soyad: document.getElementById('mSoyad').value,
+                telefon: document.getElementById('mTel').value
+            };
+
+            fetch('http://localhost:8080/api/misafirler', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(misafirVerisi)
+            })
+            .then(response => response.json())
+            .then(kaydedilenMisafir => {
+                
+                // 2. Misafir kaydedildikten sonra Rezervasyonu arka planda oluştur (Otomatik)
+                const rezervasyonVerisi = {
+                    misafir: { id: kaydedilenMisafir.id },
+                    oda: { id: document.getElementById('secilenOdaId').value },
+                    girisTarihi: document.getElementById('searchGiris').value,
+                    cikisTarihi: document.getElementById('searchCikis').value,
+                    durum: "beklemede"
+                };
+
+                return fetch('http://localhost:8080/api/rezervasyonlar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(rezervasyonVerisi)
+                });
+            })
+            .then(res => {
+                if(res.ok) {
+                    document.getElementById('musteriRezervasyonForm').style.display = 'none';
+                    document.getElementById('basariMesaji').classList.remove('d-none');
+                    // 3 saniye sonra ekranı temizle
+                    setTimeout(() => { modal.hide(); odalaribul(); }, 3000);
+                }
+            })
+            .catch(err => console.error(err));
+        });
+    </script>
+</body>
+</html>

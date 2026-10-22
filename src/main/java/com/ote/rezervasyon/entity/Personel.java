@@ -20,8 +20,14 @@ public class Personel {
     private String soyad;
 
     @Column(nullable = false)
-    private String gorev; // Örn: resepsiyon, kat görevlisi, yönetici
+    private String gorev; 
 
     @Column(nullable = false)
     private LocalDate iseGirisTarihi;
+
+    // Veritabanına yeni eklediğimiz giriş bilgileri
+    @Column(unique = true)
+    private String kullaniciAdi;
+
+    private String sifre;
 }

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Grand Otel - Online Rezervasyon</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: url('https://images.unsplash.com/photo-1566073172553-d18388410543?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed; background-size: cover; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .overlay { background-color: rgba(0, 0, 0, 0.6); position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .navbar { background-color: rgba(33, 37, 41, 0.9) !important; }
+        .booking-card { background: rgba(255, 255, 255, 0.95); border-radius: 15px; padding: 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-top: 40px; margin-bottom: 40px; }
+        .section-title { color: #0d6efd; border-bottom: 2px solid #0d6efd; padding-bottom: 10px; margin-bottom: 20px; font-weight: bold; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+<div class="overlay"></div>
+
+<!-- Üst Menü (Artık Hoş Geldin İrem Yazmıyor!) -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#"><i class="fas fa-hotel text-warning"></i> Grand Otel Rezervasyon</a>
+        <div class="d-flex text-white align-items-center">
+            <span class="me-3"><i class="fas fa-phone-alt"></i> 0212 555 44 33</span>
+            <a href="login.html" class="btn btn-outline-light btn-sm"><i class="fas fa-user-tie"></i> Personel Girişi</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="booking-card">
+                <h3 class="text-center mb-4"><i class="fas fa-concierge-bell text-primary"></i> Otelimize Hoş Geldiniz</h3>
+                <p class="text-center text-muted mb-4">Lütfen konaklama yapacak kişinin bilgilerini ve tarihleri eksiksiz doldurunuz.</p>
+                
+                <form id="publicRezervasyonForm">
+                    <!-- 1. MİSAFİR BİLGİLERİ -->
+                    <h5 class="section-title"><i class="fas fa-user"></i> 1. Misafir Bilgileri</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Adınız</label>
+                            <input type="text" id="pAd" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Soyadınız</label>
+                            <input type="text" id="pSoyad" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">TC / Pasaport No</label>
+                            <input type="text" id="pTc" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Telefon Numarası</label>
+                            <input type="text" id="pTel" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">E-Posta Adresi</label>
+                            <input type="email" id="pMail" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Doğum Tarihi</label>
+                            <input type="date" id="pDogum" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <!-- 2. REZERVASYON BİLGİLERİ -->
+                    <h5 class="section-title"><i class="fas fa-bed"></i> 2. Konaklama Tercihleri</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Giriş Tarihi</label>
+                            <input type="date" id="pGiris" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Çıkış Tarihi</label>
+                            <input type="date" id="pCikis" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Oda Seçimi (Boş Odalar)</label>
+                        <select id="pOda" class="form-select" required>
+                            <option value="">Yükleniyor...</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4 p-3 border rounded bg-light">
+                        <label class="form-label fw-bold text-success"><i class="fas fa-wallet"></i> Ödeme Yöntemi Tercihi</label>
+                        <select id="pOdemeTuru" class="form-select border-success">
+                            <option value="Kredi Kartı">Kredi Kartı ile Ödeme</option>
+                            <option value="Nakit">Resepsiyonda Nakit Ödeme</option>
+                        </select>
+                        <small class="text-muted">Ödemeniz çıkış (Check-Out) sırasında personellerimiz tarafından tahsil edilecektir.</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100"><i class="fas fa-check-circle"></i> Rezervasyonu Tamamla</button>
+                </form>
+
+                <!-- Bildirim Mesajları -->
+                <div id="pMesaj" class="alert alert-success mt-4 d-none text-center">
+                    <h5><i class="fas fa-glass-cheers"></i> Rezervasyonunuz Başarıyla Alındı!</h5>
+                    <p class="mb-0">Otelimizde sizi ağırlamaktan mutluluk duyacağız.</p>
+                </div>
+                <div id="pHata" class="alert alert-danger mt-4 d-none text-center">
+                    İşlem başarısız! TC No veya E-posta sistemde zaten kayıtlı olabilir. Lütfen kontrol edin.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Sadece durumu "Boş" olan odaları API'den çek
+        fetch('http://localhost:8080/api/odalar')
+            .then(res => res.json())
+            .then(data => {
+                let secim = document.getElementById('pOda');
+                secim.innerHTML = '<option value="">Oda Seçiniz...</option>';
+                data.filter(o => o.durum.toLowerCase() === 'boş').forEach(o => {
+                    // odaTipi var mı yok mu kontrolü ile güvenli hale getirdik
+                    let tip = o.odaTipi ? o.odaTipi.tipAdi : 'Standart Oda';
+                    secim.innerHTML += `<option value="${o.id}">Oda ${o.odaNumarasi} - ${tip}</option>`;
+                });
+            });
+    });
+
+    // Form Gönderildiğinde Çalışacak Zincirleme İşlem
+    document.getElementById('publicRezervasyonForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // 1. Yeni Müşteri Objesi
+        const yeniMisafir = {
+            ad: document.getElementById('pAd').value,
+            soyad: document.getElementById('pSoyad').value,
+            tcPasaportNo: document.getElementById('pTc').value,
+            telefon: document.getElementById('pTel').value,
+            ePosta: document.getElementById('pMail').value,
+            dogumTarihi: document.getElementById('pDogum').value
+        };
+
+        // Önce müşteriyi veritabanına "Misafir" olarak kaydediyoruz
+        fetch('http://localhost:8080/api/misafirler', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(yeniMisafir)
+        })
+        .then(res => {
+            if(!res.ok) throw new Error("Misafir kaydı başarısız (TC/Mail kullanılmış olabilir)");
+            return res.json(); // Java'nın geri döndürdüğü ID'li misafir objesini alıyoruz
+        })
+        .then(kaydedilenMisafir => {
+            // 2. Müşteri başarıyla kaydedildi! Şimdi onun ID'sini kullanarak Rezervasyonu yapıyoruz
+            const yeniRez = {
+                misafir: { id: kaydedilenMisafir.id }, // İşte can alıcı nokta burası!
+                oda: { id: document.getElementById('pOda').value },
+                girisTarihi: document.getElementById('pGiris').value,
+                cikisTarihi: document.getElementById('pCikis').value,
+                durum: "beklemede"
+            };
+
+            return fetch('http://localhost:8080/api/rezervasyonlar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(yeniRez)
+            });
+        })
+        .then(res => {
+            if(res.ok) {
+                document.getElementById('pMesaj').classList.remove('d-none');
+                document.getElementById('pHata').classList.add('d-none');
+                document.getElementById('publicRezervasyonForm').reset();
+                
+                // 3 saniye sonra sayfayı tertemiz hale getir
+                setTimeout(() => window.location.reload(), 3000);
+            } else {
+                throw new Error("Rezervasyon ekleme başarısız");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById('pHata').classList.remove('d-none');
+            document.getElementById('pMesaj').classList.add('d-none');
+        });
+    });
+</script>
+</body>
+</html>
